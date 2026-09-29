@@ -1,0 +1,169 @@
+body {
+  background: linear-gradient(180deg, #ffcb05, #ffffff);
+  margin: 0;
+  font-family: Arial;
+  text-align: center;
+}
+
+/* ===== TÍTULO ===== */
+#titulo {
+  padding: 15px;
+  background: linear-gradient(90deg, #e60012, #ffcb05);
+  color: #1f1f1f;
+  font-size: 1.8em;
+  font-weight: bold;
+  text-shadow: 2px 2px 0 #fff;
+}
+
+/* ===== NAV ===== */
+nav {
+  background-color: #e60012;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 12px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li a {
+  background-color: #ffcb05;
+  color: #2a2a2a;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 20px;
+  transition: 0.3s;
+  font-size: clamp(12px, 3vw, 16px);
+  border: 2px solid #2a2a2a;
+}
+
+nav ul li a:hover {
+  background-color: #ffe066;
+  transform: scale(1.05);
+}
+
+/* ===== TABLA ===== */
+table {
+  border-collapse: collapse;
+  margin: 0 auto 30px auto;
+  width: 90%;
+  max-width: 900px;
+  background-color: white;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  font-size: clamp(12px, 2.5vw, 16px);
+  table-layout: fixed;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+/* Encabezado */
+th {
+  background-color: #e60012;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+td {
+  font-weight: bold;
+}
+
+/* Caption */
+caption {
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  font-weight: bold;
+  color: #e60012;
+}
+
+/* Columnas */
+th:nth-child(1), td:nth-child(1) { width: 25%; }
+th:nth-child(2), td:nth-child(2) { width: 10%; }
+th:nth-child(3), td:nth-child(3) { width: 50%; }
+th:nth-child(4), td:nth-child(4) { width: 30%; }
+
+/* ===== ESTADOS (COLORES ORIGINALES) ===== */
+.salvado {
+  background-color: #B0E0E6;
+  color: black;
+}
+
+.salvadop {
+  background-color: #FDFC8F;
+  color: black;
+}
+
+.sentenciado {
+  background-color: #E6E6FA;
+  color: black;
+}
+
+.salvadoe {
+  background-color: #E0F0FF;
+  color: black;
+}
+
+.eliminado {
+  background-color: #FF91A4;
+  color: black;
+}
+
+.ganador {
+  background-color: gold;
+  color: black;
+}
+
+.subcampeon {
+  background-color: silver;
+  color: black;
+}
+
+.tercero {
+  background-color: tan;
+  color: black;
+}
+
+/* Subtítulo */
+.subtitulo {
+  background-color: #ffcb05;
+  font-weight: bold;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  table {
+    font-size: 12px;
+  }
+
+  nav ul {
+    flex-direction: column;
+  }
+
+  nav ul li a {
+    width: 100%;
+    display: block;
+  }
+
+  th, td {
+    padding: 6px;
+  }
+}

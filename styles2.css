@@ -1,0 +1,120 @@
+body {
+    background-color: #f5f5f5;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  
+  /* ===== TÍTULO ===== */
+  #titulo {
+    padding: 10px;
+    text-align: center;
+    background-color: #DBF227;
+    color: #005C53;
+  }
+  
+  /* ===== MENÚ ===== */
+  nav {
+    background-color: #9FC131;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 10px;
+    margin-bottom: 25px;
+  }
+  
+  nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  nav ul li a {
+    background-color: #9FC131;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: 0.3s;
+    font-size: clamp(12px, 3vw, 16px);
+  }
+  
+  nav ul li a:hover {
+    background-color: #7DA026;
+  }
+  
+  /* ===== TABLA ===== */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 auto;
+    max-width: 95%;
+  }
+  
+  table {
+    width: 70%;
+    border-collapse: collapse;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    font-size: clamp(12px, 2.5vw, 16px);
+    margin: 0 auto 25px;
+  }
+  
+  th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  
+  th {
+    background-color: #D9D9D9;
+  }
+  
+  .subtitulo {
+    background-color:#e8e8e8;
+    font-weight: bold;
+  }
+  
+  .eliminado {
+    background-color: #FF91A4;
+  }
+  
+  .ganador {
+    background-color: gold;
+  }
+  
+  .subcampeon {
+    background-color: silver;
+  }
+  
+  .tercero {
+    background-color: tan;
+  }
+  
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    nav ul {
+      flex-direction: column;
+      gap: 5px;
+    }
+  
+    nav ul li a {
+      width: 100%;
+      display: block;
+    }
+  
+    th, td {
+      padding: 6px;
+    }
+  
+    table {
+      font-size: 12px;
+    }
+  }
+  

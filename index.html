@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quien soy - 3° Edición</title>
+    <link rel="shortcut icon" href="logo.png" />
+
+    
+
+    <style>
+      body {
+        background: linear-gradient(180deg, #ffcb05, #ffffff);
+        margin: 0;
+        font-family: Arial;
+        text-align: center;
+      }
+    
+      /* ===== TÍTULO ===== */
+      #titulo {
+        padding: 15px;
+        background: linear-gradient(90deg, #e60012, #ffcb05);
+        color: #1f1f1f;
+        font-size: 1.8em;
+        font-weight: bold;
+        text-shadow: 2px 2px 0 #fff;
+      }
+    
+      /* ===== NAV ===== */
+      nav {
+        background-color: #e60012;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        padding: 12px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      }
+    
+      nav ul {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+    
+      nav ul li a {
+        background-color: #ffcb05;
+        color: #2a2a2a;
+        font-weight: bold;
+        text-decoration: none;
+        padding: 8px 14px;
+        border-radius: 20px;
+        transition: 0.3s;
+        font-size: clamp(12px, 3vw, 16px);
+        border: 2px solid #2a2a2a;
+      }
+    
+      nav ul li a:hover {
+        background-color: #ffe066;
+        transform: scale(1.05);
+      }
+    
+      /* ===== CONTENEDOR TABLA ===== */
+      .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 auto;
+        max-width: 95%;
+      }
+    
+      /* ===== TABLA ===== */
+      table {
+        width: 80%;
+        border-collapse: collapse;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        font-size: clamp(12px, 2.5vw, 16px);
+        margin: 0 auto 30px;
+        background-color: white;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+    
+      th, td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: center;
+        word-wrap: break-word;
+        white-space: nowrap;
+      }
+    
+      /* Encabezado */
+      th {
+        background-color: #e60012;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+    
+      caption {
+        font-size: 1.5em;
+        margin-bottom: 12px;
+        font-weight: bold;
+        color: #e60012;
+      }
+    
+      /* Subtítulos */
+      .subtitulo {
+        background-color: #ffffff;
+        font-weight: bold;
+      }
+    
+      /* ===== COLORES ORIGINALES (SIN CAMBIOS) ===== */
+      .eliminado {
+        background-color: #FF91A4;
+      }
+    
+      .ganador {
+        background-color: gold;
+      }
+    
+      .subcampeon {
+        background-color: silver;
+      }
+    
+      .tercero {
+        background-color: tan;
+      }
+    
+      /* ===== RESPONSIVE ===== */
+      @media (max-width: 600px) {
+        table {
+          font-size: 12px;
+          width: 95%;
+        }
+    
+        nav ul {
+          flex-direction: column;
+        }
+    
+        nav ul li a {
+          width: 100%;
+          display: block;
+        }
+    
+        th, td {
+          padding: 6px;
+        }
+      }
+    </style>
+    
+  </head>
+
+  <body>
+    <header id="titulo">
+      <h1>Quien soy - 3° Edición</h1>
+    </header>
+
+    <nav>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="top26.html">Top 26</a></li>
+        <li><a href="top23.html">Top 23</a></li>
+        <li><a href="top21.html">Top 21</a></li>
+        <li><a href="top18.html">Top 18</a></li>
+        <li><a href="top14.html">Top 14</a></li>
+        <li><a href="semanafinal.html">Semana Final</a></li>
+        <li><a href="tabla.html">Tabla Final</a></li>
+      </ul>
+    </nav>
+
+    <main class="container mt-3">
+      <div class="table-container">
+        <table>
+          <caption>Orden de eliminación</caption>
+          <thead>
+            <tr>
+              <th>Participante</th>
+              <th>Orden</th>
+              <th>Batalla</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="subtitulo"><td>Esteban</td><td class="eliminado">1° Eliminado</td><td>Batalla 4</td></tr>
+            <tr class="subtitulo"><td>Samuel</td><td class="eliminado">2° Eliminado</td><td>Batalla 4</td></tr>
+            <tr class="subtitulo"><td>Matthew</td><td class="eliminado">3° Eliminado</td><td>Batalla 4</td></tr>
+            <tr class="subtitulo"><td>Santi</td><td class="eliminado">4° Eliminado</td><td>Batalla 9</td></tr>
+            <tr class="subtitulo"><td>Luisa</td><td class="eliminado">5° Eliminada</td><td>Batalla 9</td></tr>
+            <tr class="subtitulo"><td>Maximo</td><td class="eliminado">6° Eliminado</td><td>Batalla 13</td></tr>
+            <tr class="subtitulo"><td>Edgar</td><td class="eliminado">7° Eliminado</td><td>Batalla 13</td></tr>
+            <tr class="subtitulo"><td>Eric</td><td class="eliminado">8° Eliminado</td><td>Batalla 13</td></tr>
+            <tr class="subtitulo"><td>Tsuki</td><td class="eliminado">9° Eliminada</td><td>Batalla 16</td></tr>
+            <tr class="subtitulo"><td>José</td><td class="eliminado">10° Eliminado</td><td>Batalla 16</td></tr>
+            <tr class="subtitulo"><td>Gustavo</td><td class="eliminado">11° Eliminado</td><td>Batalla 16</td></tr>
+            <tr class="subtitulo"><td>Messo</td><td class="eliminado">12° Eliminada</td><td>Batalla 16</td></tr>
+            <tr class="subtitulo"><td>El sujeto</td><td class="eliminado">13° Eliminado</td><td>Batalla 19</td></tr>
+            <tr class="subtitulo"><td>Broquer</td><td class="eliminado">14° Eliminado</td><td>Batalla 19</td></tr>
+            <tr class="subtitulo"><td>Leonel</td><td class="eliminado">15° Eliminado</td><td>Batalla 19</td></tr>
+            <tr class="subtitulo"><td>Delta</td><td class="eliminado">16° Eliminado</td><td>Batalla 19</td></tr>
+            <tr class="subtitulo"><td>Ghost2</td><td class="eliminado">17° Eliminado</td><td>Batalla 19</td></tr>
+            <tr class="subtitulo"><td>SandroBa82</td><td class="eliminado">18° Eliminado</td><td>Batalla 19</td></tr>
+            <tr class="subtitulo"><td>Sation</td><td class="eliminado">19° Eliminado</td><td>Batalla 20</td></tr>
+            <tr class="subtitulo"><td>Aldrick</td><td class="eliminado">20° Eliminado</td><td>Batalla 21</td></tr>
+            <tr class="subtitulo"><td>Franco</td><td class="eliminado">21° Eliminado</td><td>Batalla 22</td></tr>
+            <tr class="subtitulo"><td>Diego</td><td class="eliminado">22° Eliminado</td><td>Batalla 23</td></tr>
+            <tr class="subtitulo"><td>Kouga</td><td class="eliminado">23° Eliminado</td><td>Batalla 24</td></tr>
+            <tr class="subtitulo"><td>Helena</td><td class="tercero">Tercer lugar</td><td>Batalla 25</td></tr>
+            <tr class="subtitulo"><td>Ángel</td><td class="subcampeon">Subcampeón</td><td>Batalla 25</td></tr>
+            <tr class="subtitulo"><td>GhostPokepark</td><td class="ganador">Ganador</td><td>Batalla 25</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </body>
+</html>
