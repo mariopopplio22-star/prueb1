@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simulador Eliminatorias Sudamericanas</title>
+  <style>
+    :root{
+      --bg:#1e1e2f;
+      --panel:#2e2e40;
+      --accent:#007acc;
+      --muted:#888;
+      --heading:#444;
+      --yellow:#FFD700;
+      --green:#228B22;
+      --red:#B22222;
+      --white:#ffffff;
+    }
+    html,body{height:100%;margin:0;font-family:Arial, sans-serif;background:var(--bg);color:var(--white)}
+    .container{max-width:1150px;margin:18px auto;padding:16px}
+    .top{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+    .top label{font-weight:700}
+    .top input[type="text"]{flex:1;padding:8px 10px;border-radius:6px;border:1px solid #333;background:#111;color:var(--white);font-size:14px}
+    .btn{padding:8px 12px;border-radius:6px;border:0;cursor:pointer;font-weight:700}
+    .btn-primary{background:var(--accent);color:var(--white)}
+    .btn-plain{background:#444;color:var(--white)}
+    .btn-save{background:green;color:white}
+    .btn-danger{background:var(--red);color:white}
+    .controls{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+    .table-panel{background:var(--panel);padding:12px;border-radius:8px;border:1px solid #2b2b3b;display:flex;gap:12px}
+    .standings{min-width:420px;flex:0 0 420px}
+    .standings table{width:100%;border-collapse:collapse}
+    .standings th, .standings td{padding:6px 8px;text-align:center;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .standings th{background:var(--heading);font-weight:700}
+    .matches{flex:1;padding:8px;max-height:420px;overflow:auto}
+    .match-row{display:flex;align-items:center;gap:8px;padding:6px;border-radius:6px;margin-bottom:6px;background:rgba(0,0,0,0.05)}
+    .team-label{width:160px;text-align:center;font-weight:700}
+    .score-input{width:48px;padding:6px;border-radius:6px;border:1px solid #333;background:#111;color:var(--white);text-align:center;font-weight:700}
+    .jornada-bar{display:flex;align-items:center;gap:8px;margin-top:10px}
+    .jornada-label{color:var(--yellow);font-weight:800;font-size:16px}
+    .tag{padding:4px 8px;border-radius:6px;font-weight:700}
+    .clasificado{background:var(--green);color:white}
+    .repechaje{background:var(--yellow);color:black}
+    .eliminado{background:var(--red);color:white}
+    .small{font-size:12px;color:#ccc}
+    .footer{margin-top:12px;display:flex;justify-content:space-between;align-items:center}
+    /* responsive */
+    @media (max-width:900px){
+      .table-panel{flex-direction:column}
+      .standings{width:100%;flex:auto}
+      .team-label{width:120px}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top">
+      <label for="teamsInput">Nombres de equipos (separados por coma):</label>
+      <input id="teamsInput" type="text" placeholder="Ej: Peru, Argentina, Brasil, Colombia" />
+      <button id="loadBtn" class="btn btn-primary">Cargar equipos</button>
+      <button id="clearAllBtn" class="btn btn-danger" title="Borrar todos los resultados guardados">Borrar todos los resultados</button>
+    </div>
+
+    <div class="controls">
+      <div class="jornada-bar">
+        <button id="prevBtn" class="btn btn-plain">Anterior</button>
+        <span class="jornada-label" id="jornadaLabel">Jornada 1</span>
+        <button id="nextBtn" class="btn btn-plain">Siguiente</button>
+      </div>
+
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <button id="saveBtn" class="btn btn-save">Guardar</button>
+        <div class="small">Clasifican: <span id="numClas">4</span> — Repechaje: <span id="numRep">1</span></div>
+      </div>
+    </div>
+
+    <div class="table-panel">
+      <div class="standings">
+        <table id="standingsTable">
+          <thead>
+            <tr>
+              <th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="matches" id="matchesPanel">
+        <!-- partidos se inyectan aquí -->
+      </div>
+    </div>
+
+    <div class="footer small">
+      <div>Simulador Eliminatorias Sudamericanas — UI adaptada desde Tkinter</div>
+      <div id="statusArea"></div>
+    </div>
+  </div>
+
+<script>
+/*
+  Implementación en JS que replica la app Python:
+  - genera fixture balanceado (ida y vuelta)
+  - guarda en localStorage equipos y resultados
+  - navegación de jornadas, edición de resultados
+  - botón borrar todo
+  - guardar silencioso (sin alertas)
+*/
+
+(() => {
+  // Config (igual que en tu app python)
+  const NUM_CLASSIFY = 4;
+  const NUM_REPECHAGE = 1;
+
+  // DOM
+  const teamsInput = document.getElementById('teamsInput');
+  const loadBtn = document.getElementById('loadBtn');
+  const matchesPanel = document.getElementById('matchesPanel');
+  const standingsBody = document.querySelector('#standingsTable tbody');
+  const jornadaLabel = document.getElementById('jornadaLabel');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const saveBtn = document.getElementById('saveBtn');
+  const clearAllBtn = document.getElementById('clearAllBtn');
+  const numClasSpan = document.getElementById('numClas');
+  const numRepSpan = document.getElementById('numRep');
+
+  numClasSpan.textContent = NUM_CLASSIFY;
+  numRepSpan.textContent = NUM_REPECHAGE;
+
+  // State
+  let teams = [];
+  let fixture = []; // array de jornadas, cada jornada es array de partidos [ [local,visitante], ... ]
+  let results = {}; // { jornadaNumber: { "local|visitante": [g1,g2], ... }, ... }
+  let currentJornada = 1;
+
+  // Storage keys
+  const KEY_TEAMS = 'eliminatorias_teams_v1';
+  const KEY_RESULTS = 'eliminatorias_results_v1';
+  const KEY_CURRENT = 'eliminatorias_current_v1';
+
+  // Utiles
+  function saveToStorage() {
+    // Guardar sin notificaciones
+    try {
+      localStorage.setItem(KEY_TEAMS, JSON.stringify(teams));
+      localStorage.setItem(KEY_RESULTS, JSON.stringify(results));
+      localStorage.setItem(KEY_CURRENT, JSON.stringify(currentJornada));
+    } catch (e) {
+      console.error("Error guardando en localStorage:", e);
+    }
+  }
+
+  function loadFromStorage() {
+    try {
+      const t = JSON.parse(localStorage.getItem(KEY_TEAMS) || 'null');
+      const r = JSON.parse(localStorage.getItem(KEY_RESULTS) || 'null');
+      const c = JSON.parse(localStorage.getItem(KEY_CURRENT) || 'null');
+      if (Array.isArray(t) && t.length) {
+        teams = t;
+        fixture = generateBalancedFixture(teams);
+        results = r || {};
+        currentJornada = Number.isInteger(c) ? c : 1;
+        if (currentJornada < 1) currentJornada = 1;
+        if (currentJornada > fixture.length) currentJornada = 1;
+        showMatches();
+        updateTable();
+        // also fill teams input for transparency
+        teamsInput.value = teams.join(', ');
+      }
+    } catch (e) {
+      console.error("Error leyendo localStorage:", e);
+    }
+  }
+
+  // Genera fixture como en python (circle method) con ida y vuelta
+  function generateBalancedFixture(teamList) {
+    let equipos = teamList.slice();
+    if (equipos.length % 2 !== 0) equipos.push('DESCANSA');
+    const n = equipos.length;
+    const mitad = n / 2;
+    let jornadas = [];
+
+    // We'll clone array each round
+    let roundTeams = equipos.slice();
+    for (let i = 0; i < n - 1; i++) {
+      let jornada = [];
+      for (let j = 0; j < mitad; j++) {
+        const t1 = roundTeams[j];
+        const t2 = roundTeams[n - 1 - j];
+        if (t1 !== 'DESCANSA' && t2 !== 'DESCANSA') {
+          if (i % 2 === 0) jornada.push([t1, t2]);
+          else jornada.push([t2, t1]);
+        }
+      }
+      // rotate
+      roundTeams = [roundTeams[0]].concat([roundTeams[roundTeams.length - 1]], roundTeams.slice(1, roundTeams.length - 1));
+      jornadas.push(jornada);
+    }
+
+    // vuelta (invertir local/visitante)
+    const jornadasVuelta = jornadas.map(j => j.map(([a,b]) => [b,a]));
+    return jornadas.concat(jornadasVuelta);
+  }
+
+  // Mostrar partidos de la jornada actual
+  function showMatches() {
+    matchesPanel.innerHTML = '';
+    if (!fixture || fixture.length === 0) {
+      matchesPanel.innerHTML = '<div class="small">No hay equipos cargados.</div>';
+      jornadaLabel.textContent = 'Jornada 0';
+      return;
+    }
+    const jornada = currentJornada;
+    jornadaLabel.textContent = `Jornada ${jornada}`;
+    const partidos = fixture[jornada-1];
+
+    const title = document.createElement('div');
+    title.style.marginBottom = '8px';
+    title.innerHTML = `<strong>Partidos Jornada ${jornada}</strong>`;
+    matchesPanel.appendChild(title);
+
+    partidos.forEach((pair, idx) => {
+      const [local, visitante] = pair;
+      const row = document.createElement('div');
+      row.className = 'match-row';
+
+      const lblLocal = document.createElement('div');
+      lblLocal.className = 'team-label';
+      lblLocal.textContent = local;
+      row.appendChild(lblLocal);
+
+      const input1 = document.createElement('input');
+      input1.type = 'number';
+      input1.min = '0';
+      input1.className = 'score-input';
+      input1.dataset.idx = idx;
+      input1.dataset.side = 'local';
+      row.appendChild(input1);
+
+      const vs = document.createElement('div');
+      vs.textContent = 'vs';
+      vs.style.fontWeight = '800';
+      vs.style.color = 'var(--yellow)';
+      row.appendChild(vs);
+
+      const input2 = document.createElement('input');
+      input2.type = 'number';
+      input2.min = '0';
+      input2.className = 'score-input';
+      input2.dataset.idx = idx;
+      input2.dataset.side = 'visitante';
+      row.appendChild(input2);
+
+      const lblVisit = document.createElement('div');
+      lblVisit.className = 'team-label';
+      lblVisit.textContent = visitante;
+      row.appendChild(lblVisit);
+
+      matchesPanel.appendChild(row);
+
+      // cargar si existe resultado guardado
+      const jornadaResults = results[jornada] || {};
+      const key = pairKey(local, visitante);
+      if (jornadaResults && jornadaResults[key]) {
+        const [g1,g2] = jornadaResults[key];
+        input1.value = g1;
+        input2.value = g2;
+      }
+
+      // on enter blur? we'll allow editing. No auto save on change per spec, save on button click.
+    });
+  }
+
+  function pairKey(a,b){ return `${a}│${b}`; } // use special char to avoid conflicts
+
+  // Guarda resultados de la jornada actual (silencioso)
+  function saveResults() {
+    if (!fixture || fixture.length === 0) return;
+    const jornada = currentJornada;
+    const partidos = fixture[jornada-1];
+    if (!results[jornada]) results[jornada] = {};
+    // recorrer inputs en matchesPanel
+    const rows = matchesPanel.querySelectorAll('.match-row');
+    rows.forEach((row, idx) => {
+      const inputs = row.querySelectorAll('input.score-input');
+      if (inputs.length >= 2) {
+        const g1 = inputs[0].value;
+        const g2 = inputs[1].value;
+        // only save if both are numeric (allow 0)
+        const n1 = g1 === '' ? null : parseInt(g1, 10);
+        const n2 = g2 === '' ? null : parseInt(g2, 10);
+        const [local, visitante] = partidos[idx];
+        const key = pairKey(local, visitante);
+        if (Number.isInteger(n1) && Number.isInteger(n2)) {
+          results[jornada][key] = [n1,n2];
+        } else {
+          // remove if exists
+          if (results[jornada][key]) delete results[jornada][key];
+        }
+      }
+    });
+
+    // persist all
+    saveToStorage();
+    // silent save -> no alerts / message boxes
+  }
+
+  // Calcular tabla de posiciones
+  function calculateTable() {
+    // init stats
+    const stats = {};
+    teams.forEach(t => {
+      stats[t] = {PJ:0,G:0,E:0,P:0,GF:0,GC:0,DG:0,Pts:0};
+    });
+
+    // iterate all jornadas and results
+    Object.keys(results).forEach(jorKey => {
+      const jornadaRes = results[jorKey];
+      if (!jornadaRes) return;
+      Object.keys(jornadaRes).forEach(pairk => {
+        const [a,b] = pairk.split('│');
+        const [g1,g2] = jornadaRes[pairk];
+        // ensure teams still exist
+        if (!(a in stats) || !(b in stats)) return;
+        stats[a].PJ += 1;
+        stats[b].PJ += 1;
+        stats[a].GF += g1;
+        stats[a].GC += g2;
+        stats[b].GF += g2;
+        stats[b].GC += g1;
+
+        if (g1 > g2) {
+          stats[a].G += 1;
+          stats[a].Pts += 3;
+          stats[b].P += 1;
+        } else if (g2 > g1) {
+          stats[b].G += 1;
+          stats[b].Pts += 3;
+          stats[a].P += 1;
+        } else {
+          stats[a].E += 1;
+          stats[b].E += 1;
+          stats[a].Pts += 1;
+          stats[b].Pts += 1;
+        }
+      });
+    });
+
+    // DG
+    Object.keys(stats).forEach(t => stats[t].DG = stats[t].GF - stats[t].GC);
+
+    // sort: Pts, DG, GF (desc)
+    const table = Object.entries(stats).sort((x,y) => {
+      const a = x[1], b = y[1];
+      if (a.Pts !== b.Pts) return b.Pts - a.Pts;
+      if (a.DG !== b.DG) return b.DG - a.DG;
+      if (a.GF !== b.GF) return b.GF - a.GF;
+      // fallback alphabetical asc
+      return x[0].localeCompare(y[0], 'es', {sensitivity:'base'});
+    });
+
+    return table;
+  }
+
+  // Render tabla de posiciones
+  function updateTable() {
+    standingsBody.innerHTML = '';
+    if (!teams || teams.length === 0) {
+      standingsBody.innerHTML = '<tr><td colspan="10">No hay equipos</td></tr>';
+      return;
+    }
+    const table = calculateTable();
+    table.forEach((entry, idx) => {
+      const team = entry[0];
+      const data = entry[1];
+      const tr = document.createElement('tr');
+      // color tag based on position
+      let tagClass = '';
+      const pos = idx + 1;
+      if (pos <= NUM_CLASSIFY) tagClass = 'clasificado';
+      else if (pos <= NUM_CLASSIFY + NUM_REPECHAGE) tagClass = 'repechaje';
+      else tagClass = 'eliminado';
+
+      tr.innerHTML = `
+        <td>${pos}</td>
+        <td style="text-align:left">${team}</td>
+        <td>${data.PJ}</td>
+        <td>${data.G}</td>
+        <td>${data.E}</td>
+        <td>${data.P}</td>
+        <td>${data.GF}</td>
+        <td>${data.GC}</td>
+        <td>${data.DG}</td>
+        <td>★ ${data.Pts} ★</td>
+      `;
+      tr.classList.add(tagClass);
+      standingsBody.appendChild(tr);
+    });
+  }
+
+  // Eventos
+  loadBtn.addEventListener('click', () => {
+    const raw = teamsInput.value.trim();
+    if (!raw) return;
+    const arr = raw.split(',').map(s => s.trim()).filter(s => s.length);
+    if (arr.length % 2 !== 0) {
+      // show modal-like small error (we'll use window.alert since no UI dialog requested)
+      // But user asked: "si al dar guardar no aparezca ninguna ventana que diga que se guardo" - this is about saving.
+      // It's acceptable to show an error for invalid team count.
+      alert('Debe ingresar un número PAR de equipos');
+      return;
+    }
+    teams = arr;
+    fixture = generateBalancedFixture(teams);
+    // reset or re-init results structure if different
+    // preserve existing results for matching team names (if teams changed drastically, they'll be ignored)
+    if (!results || typeof results !== 'object') results = {};
+    currentJornada = 1;
+    // save teams and clear results for jornadas not consistent? We'll keep existing results that match keys; old results referencing teams no longer present are ignored in table calc.
+    saveToStorage();
+    showMatches();
+    updateTable();
+  });
+
+  prevBtn.addEventListener('click', () => {
+    if (currentJornada > 1) {
+      // before switching, auto-load any edits? we preserve edits until save is clicked
+      currentJornada -= 1;
+      saveToStorage(); // persist current jornada number so it's restored on reload
+      showMatches();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (fixture && currentJornada < fixture.length) {
+      currentJornada += 1;
+      saveToStorage();
+      showMatches();
+    }
+  });
+
+  saveBtn.addEventListener('click', () => {
+    saveResults();
+    updateTable();
+    // silent save: do not show any popup or toast
+  });
+
+  clearAllBtn.addEventListener('click', () => {
+    const ok = confirm('¿Borrar TODOS los equipos y resultados guardados? Esta acción no se puede deshacer.');
+    if (!ok) return;
+    teams = [];
+    fixture = [];
+    results = {};
+    currentJornada = 1;
+    localStorage.removeItem(KEY_TEAMS);
+    localStorage.removeItem(KEY_RESULTS);
+    localStorage.removeItem(KEY_CURRENT);
+    teamsInput.value = '';
+    showMatches();
+    updateTable();
+  });
+
+  // Remove focus when click outside input (imitando tu binding en Tkinter)
+  document.addEventListener('click', (ev) => {
+    const tgt = ev.target;
+    if (!(tgt.tagName === 'INPUT' && tgt.classList.contains('score-input'))) {
+      // blur any focused score input
+      const focused = document.querySelector('input.score-input:focus');
+      if (focused) focused.blur();
+    }
+  });
+
+  // On load, try to load saved state
+  window.addEventListener('load', () => {
+    loadFromStorage();
+    // if nothing saved, show empty UI
+    if (!teams || teams.length === 0) {
+      showMatches();
+      updateTable();
+    }
+  });
+
+  // Save current jornada number when page unloads to restore position
+  window.addEventListener('beforeunload', () => {
+    saveToStorage();
+  });
+
+})();
+</script>
+</body>
+</html>
